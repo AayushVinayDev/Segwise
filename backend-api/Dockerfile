@@ -1,7 +1,6 @@
 # Use the official Golang image to build the application
 FROM golang:1.22 as builder
 
-# Set the working directory
 WORKDIR /app
 
 # Copy go.mod and go.sum files
@@ -10,20 +9,20 @@ COPY go.mod go.sum ./
 # Download dependencies
 RUN go mod download
 
-# Copy the source code from the `backend-api` directory
+# Copy the source code, including static files and main.go in the cmd folder
 COPY . .
 
-# Build the application
+# Build the application binary from main.go in the cmd directory
 RUN CGO_ENABLED=0 GOOS=linux go build -o /backend-api ./cmd/main.go
 
 # Use a minimal base image for the final build
 FROM alpine:latest
 
-# Set working directory
 WORKDIR /app
 
-# Copy the compiled binary from the builder stage
+# Copy the compiled binary and static files
 COPY --from=builder /backend-api .
+COPY --from=builder /app/static ./static
 
 # Expose the port the API runs on
 EXPOSE 8080

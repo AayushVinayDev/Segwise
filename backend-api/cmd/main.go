@@ -20,7 +20,8 @@ func main() {
 	r := routes.NewRouter()
 
 	// Serve static files for the UI from the "static" folder
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./static/"))))
+	fs := http.FileServer(http.Dir("./static"))
+	r.PathPrefix("/").Handler(fs)
 
 	// Start the HTTP server
 	log.Println("Server is running on :8080")
