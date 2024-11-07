@@ -1,0 +1,7 @@
+google-play-scraper==1.2.0
+supabase-py
+onnxruntime==1.10.0
+numpy==1.21.5
+torch==1.10.0
+python-dotenv==0.19.2
+transformers

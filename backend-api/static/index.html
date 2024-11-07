@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Dashboard</title>
+    <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+            font-size: 16px;
+        }
+        
+        .chart-container {
+            height: 200px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .no-data {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+        }        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Review Dashboard</h1>
+
+        <div class="controls">
+            <input type="date" id="date" name="date" onchange="fetchData()">
+            <select id="category" name="category" onchange="fetchData()">
+                <option value="Bugs">Bugs</option>
+                <option value="Complaints">Complaints</option>
+                <option value="Crashes">Crashes</option>
+                <option value="Praises">Praises</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <!-- Today's Reviews Card -->
+        <div class="card">
+            <div class="card-title">Today's Reviews</div>
+            <div id="reviews-data">
+                <div id="review-count">0</div>
+                <div id="review-category">in <span class="badge">Category</span></div>
+            </div>
+            <div id="no-reviews-message" class="no-data" style="display: none;">
+                No data for this category, try for another category.
+            </div>
+        </div>
+
+        <!-- 7-Day Trend Card -->
+        <div class="card">
+            <div class="card-title">7-Day Trend</div>
+            <div class="chart-container">
+                <div id="no-trend-message" class="no-data" style="display: none;">
+                    Not sufficient data
+                </div>
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Reviews List Card -->
+        <div class="card">
+            <div class="card-title">Reviews for <span id="selected-date">2024-11-01</span></div>
+            <div id="reviews-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let trendChart;
+    
+        function initializeChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Reviews',
+                        data: [],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    
+        function fetchData() {
+            const selectedDate = document.getElementById('date').value;
+            const selectedCategory = document.getElementById('category').value;
+            document.getElementById('selected-date').textContent = selectedDate;
+    
+            // Fetch reviews
+            fetch(`/reviews?category=${selectedCategory}&date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => updateTodayReviewCard(data))
+                .catch(error => showReviewsError());
+    
+            // Fetch trend
+            fetch(`/trend?category=${selectedCategory}&date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => updateTrendChart(data))
+                .catch(error => showTrendError());
+        }
+    
+        function showReviewsError() {
+            const reviewsData = document.getElementById('reviews-data');
+            const noReviewsMessage = document.getElementById('no-reviews-message');
+            const reviewsList = document.getElementById('reviews-list');
+            
+            reviewsData.style.display = 'none';
+            noReviewsMessage.style.display = 'block';
+            reviewsList.innerHTML = '';
+        }
+    
+        function showTrendError() {
+            const noTrendMessage = document.getElementById('no-trend-message');
+            const canvas = document.getElementById('trendChart');
+            
+            noTrendMessage.style.display = 'block';
+            canvas.style.display = 'none';
+        }
+    
+        function updateTodayReviewCard(data) {
+            const reviewsData = document.getElementById('reviews-data');
+            const noReviewsMessage = document.getElementById('no-reviews-message');
+            const reviewsList = document.getElementById('reviews-list');
+            
+            if (!data || data.length === 0) {
+                reviewsData.style.display = 'none';
+                noReviewsMessage.style.display = 'block';
+                reviewsList.innerHTML = '';
+                return;
+            }
+    
+            reviewsData.style.display = 'block';
+            noReviewsMessage.style.display = 'none';
+            
+            document.getElementById('review-count').textContent = data.length;
+            document.getElementById('review-category').innerHTML = 
+                `in <span class="badge">${data[0].category}</span>`;
+            
+            reviewsList.innerHTML = data.map(review => `
+                <div class="review-item">
+                    <div class="flex justify-between">
+                        <span>${review.review_date}</span>
+                        <span class="badge">${review.category}</span>
+                        <span>${review.rating}/5</span>
+                    </div>
+                    <p>${review.review_text}</p>
+                </div>
+            `).join('');
+        }
+    
+        function updateTrendChart(data) {
+            const noTrendMessage = document.getElementById('no-trend-message');
+            const canvas = document.getElementById('trendChart');
+    
+            if (!data || data.length === 0) {
+                noTrendMessage.style.display = 'block';
+                canvas.style.display = 'none';
+                return;
+            }
+    
+            noTrendMessage.style.display = 'none';
+            canvas.style.display = 'block';
+            
+            trendChart.data.labels = data.map(item => item.date);
+            trendChart.data.datasets[0].data = data.map(item => item.count);
+            trendChart.update();
+        }
+    
+        // Initialize the chart when the page loads
+        initializeChart();
+        
+        // Set today's date as default
+        const today = new Date();
+        document.getElementById('date').value = today.toISOString().split('T')[0];
+        
+        // Fetch initial data
+        fetchData();
+    </script>
+</body>
+</html>
