@@ -2,13 +2,29 @@
 
 This project is a review classification system designed to scrape, classify, store, and retrieve reviews for a specific app from the Google Play Store. The project is divided into two main parts: a Python-based scraper and classifier, and a Golang-based API with an HTMX frontend for querying and displaying review data.
 
-## Resources Used and Reasoning
+## Resources Used and Project Highlights
 
-I used ChatGPT to brainstorm my approach to building this project. After I had a clear project flow on how to proceed, especially how to use and train a small LLM like `distilbert-uncased` for text classification on a custom dataset and then convert it into ONNX format for efficiency, I tried to keep the LLM small because I wanted to reduce any future production cost on CPU and space. After training my LLM and getting a decent result, I searched how to scrape data from the Google Play Store. My first approach was to use the `google-play-scraper` package in Python, but I encountered lots of bugs, and due to time constraints, I opted for SerpAPI, which I learned about on YouTube. 
+Working on this project was both challenging and incredibly rewarding. Here’s a summary of the resources and tools I used, along with the reasons behind my choices:
 
-After creating a working scraper and using my model to classify the data into categories, I decided to use Supabase as my PostgreSQL database to store the data, which my Golang backend API will fetch and process as needed. I used HTMX for a simple UI. However, since there is a restriction on the free tier of SerpAPI, my data in the database is limited, and hence you might not see any data for some categories on specific dates. But I’ve configured my UI to notify when there is no data in a category or trend.
+- **Brainstorming and Project Planning**:
+  - I turned to **ChatGPT** to brainstorm and outline the entire approach for building this project. With ChatGPT’s help, I mapped out each step clearly and knew exactly how to proceed.
+  - I aimed to keep things efficient, using a lightweight language model (**LLM**) like **`distilbert-uncased`** for text classification. This choice allowed me to classify reviews on a custom dataset and convert the model into **ONNX format** for faster runtime and lower costs on CPU and storage.
 
-Working on this project from start to finish, I encountered numerous errors, and I have to thank ChatGPT, Claude, and Cursor IDE for helping me with debugging and providing the necessary information on why my code was encountering issues.
+- **Data Scraping**:
+  - To collect reviews, I initially tried the **`google-play-scraper`** package in Python. However, it had bugs, and due to time constraints, I quickly pivoted to **SerpAPI**, which I discovered on YouTube. SerpAPI turned out to be a reliable solution for my scraping needs.
+
+- **Database and Backend**:
+  - I chose **Supabase** to host my **PostgreSQL database**. This database stores all categorized reviews, which are accessed by my Golang backend API for data processing.
+  - My backend efficiently fetches, processes, and categorizes review data, making it accessible to the UI.
+
+- **UI Development**:
+  - For the user interface, I went with **HTMX** to create a straightforward and responsive UI. However, due to **free-tier limitations on SerpAPI**, the data in the database is limited. As a result, some categories might not have data for certain dates, but I configured the UI to show clear notifications when data is unavailable for a category or trend.
+
+- **Challenges and Debugging Support**:
+  - This project had its fair share of errors and debugging! **ChatGPT**, **Claude**, and **Cursor IDE** were instrumental in helping me troubleshoot and understand the underlying issues in my code.
+
+Reflecting on this project, I genuinely enjoyed tackling each challenge head-on, and it was incredibly satisfying to see the final product come together.
+
 
 ## Project Structure
 
