@@ -40,7 +40,7 @@ The review classification model uses `distilbert-base-uncased`, which is optimiz
 - **Model Accuracy**: Achieved good accuracy with the 1000-row custom dataset. Additional data could further improve performance.
 - **ONNX Model Size**: 256MB.
 
-You can access the Colab notebook used for model training and ONNX conversion here: [Colab Notebook Link](<Your_Colab_Link_Here>).
+You can access the Colab notebook used for model training and ONNX conversion here: [Colab Notebook Link](https://colab.research.google.com/drive/1Aj5pLS6y797JqGMblBjKO0WC3AyMitma?usp=sharing).
 
 ## Project Workflow
 
@@ -88,6 +88,7 @@ GET /trend?category=Praises&date=2024-11-01
     {"date": "2024-10-26", "count": 15},
     ...
 ]
+```
 
 ## Local Setup Instructions
 
@@ -144,7 +145,7 @@ This will scrape reviews, classify them, and store the data in your Supabase dat
 
 ### Deployed Solution
 
-You can access the deployed solution here: [Deployed Link](<Your_Deployed_Link_Here>)
+You can access the deployed solution here: [Deployed Link](https://segwise-cdcx.onrender.com/)
 
 ---
 
