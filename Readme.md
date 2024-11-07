@@ -28,6 +28,7 @@ Reflecting on this project, I genuinely enjoyed tackling each challenge head-on,
 
 ## Project Structure
 
+```text
 project-root/
 ├── backend-api/
 │   ├── cmd/
@@ -55,6 +56,7 @@ project-root/
     ├── Dockerfile
     ├── main.py
     └── requirements.txt
+   ```
 
 ## Model Accuracy and Improvements
 
